@@ -1,0 +1,45 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "bin/**"
+      - "README.md"
+      - "docs/**"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller pytest
+
+      - name: Tests
+        run: python -m pytest -q
+
+      - name: Smoke test (Windows SMTC backend)
+        run: python run.py --once --json
+
+      - name: Build exe
+        run: pyinstaller --noconfirm --noconsole --onefile --name NowPlaying --collect-all winrt run.py
+
+      - name: Smoke test exe
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\NowPlaying.exe -ArgumentList "--version" -PassThru -Wait
+          Write-Host "exit code: $($p.ExitCode)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NowPlaying-windows
+          path: dist/NowPlaying.exe
