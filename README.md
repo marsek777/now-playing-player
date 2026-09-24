@@ -24,7 +24,16 @@
 | **Linux** | MPRIS через D-Bus | утилита `playerctl` |
 | **macOS** | системный Now Playing через [`media-control`](https://github.com/ungive/media-control), запасной вариант — AppleScript для Spotify и Apple Music | `brew install media-control` (желательно) |
 
-## Установка
+## Скачать готовый .exe (Windows)
+
+Ничего устанавливать не нужно:
+
+- [bin/NowPlaying.exe](bin/NowPlaying.exe) — файл прямо в репозитории
+- или страница [Releases](https://github.com/marsek777/now-playing-player/releases/latest)
+
+Скачайте и запустите. Windows SmartScreen может предупредить о неизвестном издателе — нажмите «Подробнее» → «Выполнить в любом случае». Exe собирается автоматически через GitHub Actions при каждом изменении кода.
+
+## Установка из исходников
 
 Нужен Python 3.9+.
 
@@ -64,7 +73,7 @@ python -m nowplaying --once --json   # то же в JSON
 
 Можно установить как команду: `pip install .` → затем просто `nowplaying`.
 
-### Сборка .exe для Windows
+### Сборка .exe вручную
 
 ```bash
 pip install pyinstaller

@@ -9,6 +9,9 @@ on:
       - "README.md"
       - "docs/**"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -43,3 +46,27 @@ jobs:
         with:
           name: NowPlaying-windows
           path: dist/NowPlaying.exe
+
+      - name: Commit exe to repository (bin/NowPlaying.exe)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          Copy-Item dist\NowPlaying.exe bin\NowPlaying.exe -Force
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bin/NowPlaying.exe
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Сборка NowPlaying.exe [skip ci]"
+            git push
+          }
+          exit 0
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Now Playing (последняя сборка)
+          body: Готовый NowPlaying.exe для Windows 10/11 — просто скачайте и запустите.
+          files: dist/NowPlaying.exe
+          make_latest: true
